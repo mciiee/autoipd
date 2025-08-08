@@ -1,10 +1,12 @@
 CC=clang
-ifneq(ASAN,)
+ifneq ($(ASAN),)
 ASAN_FLAGS=-g -fsanitize=address
 else
 ASAN_FLAGS=
 endif
 CFLAGS=-std=c23 -Wall -Werror -Wpedantic $(ASAN_FLAGS)
+LIBS=curl
+LIBS_FLAGS=$(foreach LIB,$(LIBS),-l$(LIB))
 
 SRC_DIR=src
 BUILD_DIR=build
@@ -17,7 +19,7 @@ OUTFILE=$(BUILD_DIR)/$(EXEC_FILE)
 .PHONY: clean
 
 $(OUTFILE): $(BUILD_DIR)/main.o $(BUILD_DIR)/ip.o
-	$(CC) $(CFLAGS) $< -o $@ 
+	$(CC) $(CFLAGS) $(LIBS_FLAGS) $^ -o $@ 
 
 $(BUILD_DIR)/main.o: $(SRC_DIR)/main.c
 	$(CC) $(CFLAGS) -c $< -o $@ 
